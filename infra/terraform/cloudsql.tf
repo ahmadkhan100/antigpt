@@ -19,22 +19,21 @@ resource "google_sql_database_instance" "primary" {
     availability_type = "REGIONAL"
 
     maintenance_window {
-      day         = 7
-      hour        = 3
+      day          = 7
+      hour         = 3
       update_track = "stable"
     }
 
     ip_configuration {
       ipv4_enabled    = false
       private_network = google_compute_network.primary.id
-      require_ssl     = true
     }
 
     insights_config {
-      query_plans_per_minute       = 5
-      query_string_length          = 1024
-      record_application_tags      = true
-      record_client_address        = true
+      query_plans_per_minute  = 5
+      query_string_length     = 1024
+      record_application_tags = true
+      record_client_address   = true
     }
 
     backup_configuration {

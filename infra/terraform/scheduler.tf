@@ -1,7 +1,5 @@
 locals {
-  scheduler_sa_email = var.scheduler_service_account_email != ""
-    ? var.scheduler_service_account_email
-    : google_service_account.scheduler[0].email
+  scheduler_sa_email = trimspace(var.scheduler_service_account_email) != "" ? var.scheduler_service_account_email : google_service_account.scheduler[0].email
 }
 
 resource "google_service_account" "scheduler" {
@@ -38,17 +36,17 @@ resource "google_cloud_scheduler_job" "ingest" {
     }
 
     body = base64encode(jsonencode({
-      job = "ingest",
+      job      = "ingest",
       schedule = "2h"
     }))
   }
 
   retry_config {
-    retry_count            = 3
-    max_retry_duration     = "600s"
-    min_backoff_duration   = "10s"
-    max_backoff_duration   = "60s"
-    max_doublings          = 3
+    retry_count          = 3
+    max_retry_duration   = "600s"
+    min_backoff_duration = "10s"
+    max_backoff_duration = "60s"
+    max_doublings        = 3
   }
 
   depends_on = [google_project_iam_member.scheduler_run_invoker]

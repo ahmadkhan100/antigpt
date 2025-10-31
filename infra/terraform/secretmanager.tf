@@ -4,7 +4,7 @@ resource "google_secret_manager_secret" "managed" {
   secret_id = "${local.name_prefix}-${each.key}"
 
   replication {
-    automatic = true
+    auto {}
   }
 
   labels = local.common_labels

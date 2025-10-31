@@ -79,10 +79,11 @@ variable "secrets" {
   description = "Map of secret IDs to descriptions for secrets required by the application"
   type        = map(string)
   default = {
-    "openai_api_key"  = "OpenAI GPT-5 API key"
-    "workos_api_key"  = "WorkOS API key"
-    "stagehand_api"   = "Stagehand automation API token"
-    "trigger_dev_key" = "Trigger.dev access token"
+    "openai_api_key"         = "OpenAI GPT-5 API key"
+    "workos_api_key"         = "WorkOS API key"
+    "browserbase_api_key"    = "Browserbase API key for Stagehand"
+    "browserbase_project_id" = "Browserbase project ID"
+    "trigger_secret_key"     = "Trigger.dev secret key"
   }
 }
 

@@ -3,13 +3,10 @@ resource "random_id" "bucket_suffix" {
 }
 
 resource "google_storage_bucket" "attachments" {
-  name          = "${local.name_prefix}-attachments-${random_id.bucket_suffix.hex}"
-  location      = var.region
-  force_destroy = false
-
-  iam_configuration {
-    uniform_bucket_level_access = true
-  }
+  name                        = "${local.name_prefix}-attachments-${random_id.bucket_suffix.hex}"
+  location                    = var.region
+  force_destroy               = false
+  uniform_bucket_level_access = true
 
   versioning {
     enabled = true
@@ -28,13 +25,10 @@ resource "google_storage_bucket" "attachments" {
 }
 
 resource "google_storage_bucket" "logs" {
-  name          = "${local.name_prefix}-logs-${random_id.bucket_suffix.hex}"
-  location      = var.region
-  force_destroy = false
-
-  iam_configuration {
-    uniform_bucket_level_access = true
-  }
+  name                        = "${local.name_prefix}-logs-${random_id.bucket_suffix.hex}"
+  location                    = var.region
+  force_destroy               = false
+  uniform_bucket_level_access = true
 
   versioning {
     enabled = true
@@ -42,7 +36,7 @@ resource "google_storage_bucket" "logs" {
 
   lifecycle_rule {
     action {
-      type = "SetStorageClass"
+      type          = "SetStorageClass"
       storage_class = "NEARLINE"
     }
     condition {

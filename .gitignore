@@ -1,0 +1,9 @@
+# Terraform local state & secrets
+.terraform/
+**/.terraform/*
+terraform.tfstate
+terraform.tfstate.*
+*.tfvars
+
+# macOS cruft
+.DS_Store

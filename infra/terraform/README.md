@@ -77,6 +77,6 @@ Refer to `variables.tf` for the complete input list.
 ## Next Steps
 
 - Connect Trigger.dev workflows to the Cloud Run service using the emitted service account.
-- Grant WorkOS and Stagehand integrations access to the relevant secrets via Secret Manager versions.
+- Grant WorkOS, Browserbase (Stagehand), and Trigger.dev integrations access to the relevant secrets via Secret Manager versions.
 - Wire the Cloud SQL connection into application services (API, Electron sync daemon) using a Cloud SQL Proxy or private VPC connector.
 

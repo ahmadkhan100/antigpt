@@ -2,6 +2,13 @@ resource "google_cloud_run_service" "trigger_dev" {
   name     = "${local.name_prefix}-trigger"
   location = var.region
 
+  metadata {
+    annotations = {
+      "run.googleapis.com/ingress" = "internal-and-cloud-load-balancing"
+    }
+    labels = local.common_labels
+  }
+
   template {
     spec {
       service_account_name = google_service_account.trigger_dev.email
@@ -10,38 +17,27 @@ resource "google_cloud_run_service" "trigger_dev" {
         image = var.container_image
 
         env {
-          name = "NODE_ENV"
+          name  = "NODE_ENV"
           value = var.environment
         }
 
         env {
-          name = "LOG_BUCKET"
+          name  = "LOG_BUCKET"
           value = google_storage_bucket.logs.name
         }
       }
 
-      containers {
-        name  = "metrics-sidecar"
-        image = "gcr.io/cloudrun/hello"
-      }
-
       container_concurrency = 80
-
-      volumes {
-        name = "tmp"
-        empty_dir {}
-      }
 
       timeout_seconds = 600
     }
 
     metadata {
       annotations = {
-        "run.googleapis.com/ingress"                  = "internal-and-cloud-load-balancing"
-        "run.googleapis.com/vpc-access-connector"    = google_vpc_access_connector.run_connector.name
-        "run.googleapis.com/vpc-access-egress"       = "private-ranges-only"
-        "autoscaling.knative.dev/minScale"           = "0"
-        "autoscaling.knative.dev/maxScale"           = "5"
+        "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.run_connector.name
+        "run.googleapis.com/vpc-access-egress"    = "private-ranges-only"
+        "autoscaling.knative.dev/minScale"        = "0"
+        "autoscaling.knative.dev/maxScale"        = "5"
       }
       labels = local.common_labels
     }
