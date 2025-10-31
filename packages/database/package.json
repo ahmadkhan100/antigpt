@@ -1,0 +1,20 @@
+{
+  "name": "@antigpt/database",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:studio": "prisma studio",
+    "build": "echo 'no build step for @antigpt/database'",
+    "lint": "echo 'no lint step for @antigpt/database'"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.18.0"
+  },
+  "devDependencies": {
+    "prisma": "^6.18.0"
+  }
+}
+

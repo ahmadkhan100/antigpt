@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String            @id @default(uuid())
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  email            String            @unique
+  displayName      String?
+  workosUserId     String?           @unique
+  platformAccounts PlatformAccount[]
+  preferences      UserPreference[]
+  updates          Update[]          @relation("UserUpdates")
+}
+
+model PlatformAccount {
+  id             String           @id @default(uuid())
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  provider       Provider
+  externalId     String
+  label          String?
+  status         AccountStatus    @default(ACTIVE)
+  credentialRef  String? // Secret Manager key or reference
+  lastSyncAt     DateTime?
+  syncCursor     String?
+  metadata       Json?
+  userId         String
+  user           User             @relation(fields: [userId], references: [id])
+  updates        Update[]
+  IntegrationRun IntegrationRun[]
+
+  @@unique([provider, externalId])
+  @@index([userId, provider])
+}
+
+model Update {
+  id                String          @id @default(uuid())
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  occurredAt        DateTime
+  receivedAt        DateTime        @default(now())
+  sourceMessageId   String?
+  sourceUrl         String?
+  subject           String?
+  content           String
+  rawPayload        Json?
+  status            UpdateStatus    @default(PENDING_REVIEW)
+  importanceScore   Float?
+  tags              String[]        @default([])
+  platformAccountId String
+  platformAccount   PlatformAccount @relation(fields: [platformAccountId], references: [id])
+  userId            String?
+  user              User?           @relation("UserUpdates", fields: [userId], references: [id])
+  analyses          AIAnalysis[]
+
+  @@index([platformAccountId, occurredAt])
+  @@index([status, importanceScore])
+}
+
+model AIAnalysis {
+  id              String   @id @default(uuid())
+  createdAt       DateTime @default(now())
+  modelName       String
+  modelVersion    String?
+  summary         String
+  importanceScore Float
+  actionItems     Json?
+  sentiment       String?
+  confidence      Float?
+  tokensUsed      Int?
+  rawResponse     Json?
+  updateId        String
+  update          Update   @relation(fields: [updateId], references: [id])
+
+  @@index([updateId])
+}
+
+model UserPreference {
+  id        String        @id @default(uuid())
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  userId    String
+  user      User          @relation(fields: [userId], references: [id])
+  key       PreferenceKey
+  value     Json
+
+  @@unique([userId, key])
+}
+
+model IntegrationRun {
+  id                String           @id @default(uuid())
+  createdAt         DateTime         @default(now())
+  completedAt       DateTime?
+  triggerType       TriggerType
+  provider          Provider
+  status            RunStatus        @default(SUCCEEDED)
+  message           String?
+  metadata          Json?
+  platformAccountId String?
+  platformAccount   PlatformAccount? @relation(fields: [platformAccountId], references: [id])
+
+  @@index([provider, createdAt])
+  @@index([status])
+}
+
+enum Provider {
+  X
+  INSTAGRAM
+  WHATSAPP
+  EMAIL
+  IMESSAGE
+}
+
+enum AccountStatus {
+  ACTIVE
+  REQUIRES_ACTION
+  DISCONNECTED
+}
+
+enum UpdateStatus {
+  PENDING_REVIEW
+  REVIEWED
+  DISMISSED
+  ARCHIVED
+}
+
+enum PreferenceKey {
+  DIGEST_FREQUENCY
+  QUIET_HOURS
+  IMPORTANT_SENDERS
+  KEYWORDS
+}
+
+enum TriggerType {
+  SCHEDULED
+  MANUAL
+  WEBHOOK
+}
+
+enum RunStatus {
+  SUCCEEDED
+  FAILED
+  PARTIAL
+}

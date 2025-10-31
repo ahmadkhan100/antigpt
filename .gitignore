@@ -5,5 +5,12 @@ terraform.tfstate
 terraform.tfstate.*
 *.tfvars
 
+# Node project artifacts
+node_modules/
+package-lock.json
+.env
+npm-debug.log*
+.turbo/
+
 # macOS cruft
 .DS_Store
